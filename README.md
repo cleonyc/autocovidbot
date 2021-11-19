@@ -22,3 +22,5 @@ To use, create a `data.json` file in the same directory as `main.py` with the fo
 Note: you should not need to modify `main.py` to get the bot working.
 
 To use, simply run `main.py` by typing `python main.py` into your console, from the same directory the file is in.
+
+By using you agree to the [license](https://github.com/bread/autoCovid/blob/main/LICENSE)
