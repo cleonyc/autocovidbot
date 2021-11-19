@@ -1,3 +1,7 @@
+"""
+By using you agree to https://github.com/bread/autoCovid/blob/main/LICENSE
+"""
+
 import aiohttp
 import asyncio
 import sys
