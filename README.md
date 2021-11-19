@@ -15,7 +15,7 @@ To use, create a `data.json` file in the same directory as `main.py` with the fo
 ```
 
 * School code is the 4 character code specific to your NYC school. You can find the school code [here](https://schoolsearch.schools.nyc/). For example, "Q300."
-* State code is the 2 character state abbreviation. For example, "NY".
+* State code is the 2 character state abbreviation. If you really don't know your state abbreviation, you can find them [here](https://www.ssa.gov/international/coc-docs/states.html). For example, "NY".
 * Send hour is the hour in which the bot should submit the form. This is in 24 hour time. For example, 8 = 8AM, and 13 = 1PM.
 * If you get a `ModuleNotFound` error, type `pip install <name of the module that wasn't found>` into console. You may need to close and reopen console after it is installed.
 
