@@ -1,6 +1,6 @@
 # Auto Covid Bot
 
-Automatically fill out the NYC DOE health screening form and trigger an email with the success verification.
+Automatically fill out the [NYC DOE health screening form](https://healthscreening.schools.nyc/) and trigger an email with the success verification.
 
 To use, create a `data.json` file in the same directory as `main.py` with the format:
 ```json
