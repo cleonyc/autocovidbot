@@ -4,8 +4,6 @@ import sys
 from datetime import datetime
 import json
 
-count = 10
-
 # import data file with info on how to fill out form
 with open("data.json") as data:
     data = json.load(data)
