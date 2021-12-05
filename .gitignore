@@ -144,3 +144,7 @@ cython_debug/
 data.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+.vscode
+.env
+users.json
