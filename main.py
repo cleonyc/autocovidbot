@@ -1,18 +1,20 @@
-"""
-By using you agree to https://github.com/bread/autoCovid/blob/main/LICENSE
-"""
-
 import aiohttp
 import asyncio
 import sys
 from datetime import datetime
+from discord.commands import Option
+from apscheduler.schedulers.background import BackgroundScheduler
 import json
+import atexit
+import discord
+import os
+from threading import Thread
 
+
+bot = discord.Bot()
 # import data file with info on how to fill out form
-with open("data.json") as data:
-    data = json.load(data)
-
-
+with open("users.json") as data:
+    users = json.load(data)
 async def screen(
     # see lines 32-45 to see purposes of args
     firstName,
@@ -46,52 +48,83 @@ async def screen(
         "Answer3": str(answer3),  # answer to question 3 (0 = non-covid answer)
         "ConsentType": "",  # not needed
     }
-
     async with session.post(
         "https://healthscreening.schools.nyc/home/submit", data=data
     ) as resp:  # make request to doe endpoint to submit the form
         return await resp.json()  # gather response json
 
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    print("------")
+async def req(student):
+    async with aiohttp.ClientSession() as session:  # create aiohttp session object for sending requests
+        # while True:  # continue forever
+        screening = (  # fill out screening
+            await screen(
+                student["firstName"],
+                student["lastName"],
+                student["email"],
+                student["stateCode"],
+                student["schoolCode"],
+                session,
+            )
+        )["success"]
 
+        if screening:
+            print("Successfully screened!","-",datetime.now())
+        else:
+            print("Error screening.")
+                
+    
 async def main():
     """
     Main function, awaits the time to fill out form, and then fills out form.
     """
 
     print("Auto covid-form bot ready to boot.")
-    print("Settings:")
-    print(json.dumps(data, indent=3))
+    print("Users:")
+    print(json.dumps(users, indent=3))
     input("Press [ENTER] to start")
     print()
-
-    async with aiohttp.ClientSession() as session:  # create aiohttp session object for sending requests
-        while True:  # continue forever
-            if datetime.now().hour == data["sendHour"]:  # when it's the hour to send
-                screening = (  # fill out screening
-                    await screen(
-                        data["firstName"],
-                        data["lastName"],
-                        data["email"],
-                        data["stateCode"],
-                        data["schoolCode"],
-                        session,
-                    )
-                )["success"]
-
-                # break on fail; wait an hour on success
-                if screening:
-                    print("Successfully screened!","-",datetime.now())
-                    await asyncio.sleep(60 * 61)
-                else:
-                    print("Error screening.")
-                    break
-            else:
-                # don't overload cpu by running datetime.now() every microsecond; instead sleep every lapse
+    # TODO:  use a better scheduling method than this
+    while True: 
+        if datetime.now().hour == "6" and datetime.datetime.today().weekday() < 5:
+            for s in users:
+                await req(s)
                 await asyncio.sleep(1)
+            await asyncio.sleep(82800)
+            continue
+        await asyncio.sleep(500)
+        
 
 
-if sys.platform == "win32":
-    # prevent "Event loop is closed" error on Windows
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    
+            
+def addstudent(first, last, email, school):
+    users.append({
+        "firstName": first,
+        "lastName": last,
+        "email": email,
+        "stateCode": "NY",
+        "schoolCode": school
+    })
+    with open("users.json", "w") as file_object:
+        json.dump(users, file_object)
 
-asyncio.run(main())
+@bot.slash_command(guild_ids=[916896832737648710], description="Automatically fills out health screenings")
+async def screening(
+    ctx,
+    first: Option(str, "First Name"),
+    last: Option(str, "Last Name"),
+    email: Option(str, "Email"),
+    schoolcode: Option(str, "School Code (NOT NAME, CHECK #info)"),
+    ):
+    addstudent(first, last, email, schoolcode)
+    await ctx.respond(f"A health screening will now be sent every day at 7 am to your email!")
+def runmain():
+    asyncio.run(main())
+
+Thread(target=runmain).start()
+
+bot.run(os.getenv("TOKEN"))
