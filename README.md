@@ -12,6 +12,7 @@ Credits to https://github.com/hair for https://github.com/hair/autoCovid, the ba
 Because this is in development, the backend of this is going to break, so use with caution and feel free to contact me for help with anything.
 ```sh
 git clone https://github.com/cleonyc/autocovidbot.git 
+cd autocovidbot
 pip install git+https://github.com/Pycord-Development/pycord
 pip install -r requirements.txt
 ```
