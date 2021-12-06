@@ -10,23 +10,24 @@ import discord
 import os
 from threading import Thread
 
-
 bot = discord.Bot()
 # import data file with info on how to fill out form
 with open("users.json") as data:
     users = json.load(data)
+
+
 async def screen(
-    # see lines 32-45 to see purposes of args
-    firstName,
-    lastName,
-    email,
-    stateCode,
-    schoolCode,
-    session,
-    answer1=0,
-    answer2=0,
-    answer3=3,
-    floor="",
+        # see lines 32-45 to see purposes of args
+        firstName,
+        lastName,
+        email,
+        stateCode,
+        schoolCode,
+        session,
+        answer1=0,
+        answer2=0,
+        answer3=3,
+        floor="",
 ):
     """
     Function to fill out doe health screening.
@@ -49,14 +50,17 @@ async def screen(
         "ConsentType": "",  # not needed
     }
     async with session.post(
-        "https://healthscreening.schools.nyc/home/submit", data=data
+            "https://healthscreening.schools.nyc/home/submit", data=data
     ) as resp:  # make request to doe endpoint to submit the form
         return await resp.json()  # gather response json
+
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (ID: {bot.user.id})")
     print("------")
+
+
 async def req(student):
     async with aiohttp.ClientSession() as session:  # create aiohttp session object for sending requests
         # while True:  # continue forever
@@ -72,11 +76,11 @@ async def req(student):
         )["success"]
 
         if screening:
-            print("Successfully screened!","-",datetime.now())
+            print("Successfully screened!", "-", datetime.now())
         else:
             print("Error screening.")
-                
-    
+
+
 async def main():
     """
     Main function, awaits the time to fill out form, and then fills out form.
@@ -88,7 +92,7 @@ async def main():
     input("Press [ENTER] to start")
     print()
     # TODO:  use a better scheduling method than this
-    while True: 
+    while True:
         if datetime.now().hour == "6" and datetime.datetime.today().weekday() < 5:
             for s in users:
                 await req(s)
@@ -96,12 +100,9 @@ async def main():
             await asyncio.sleep(82800)
             continue
         await asyncio.sleep(500)
-        
 
 
-    
-            
-def addstudent(first, last, email, school):
+def add_student(first, last, email, school):
     users.append({
         "firstName": first,
         "lastName": last,
@@ -112,19 +113,23 @@ def addstudent(first, last, email, school):
     with open("users.json", "w") as file_object:
         json.dump(users, file_object)
 
+
 @bot.slash_command(guild_ids=[916896832737648710], description="Automatically fills out health screenings")
 async def screening(
-    ctx,
-    first: Option(str, "First Name"),
-    last: Option(str, "Last Name"),
-    email: Option(str, "Email"),
-    schoolcode: Option(str, "School Code (NOT NAME, CHECK #info)"),
-    ):
-    addstudent(first, last, email, schoolcode)
-    await ctx.respond(f"A health screening will now be sent every day at 6 am to your email!")
-def runmain():
+        ctx,
+        first: Option(str, "First Name"),
+        last: Option(str, "Last Name"),
+        email: Option(str, "Email"),
+        schoolcode: Option(str, "School Code (NOT NAME, CHECK #info)"),
+):
+    add_student(first, last, email, schoolcode)
+    await ctx.respond(f"A health screening will now be sent every day at 6 am to your email!", ephemeral=True)
+
+
+def run_main():
     asyncio.run(main())
 
-Thread(target=runmain).start()
+
+Thread(target=run_main).start()
 
 bot.run(os.getenv("TOKEN"))
