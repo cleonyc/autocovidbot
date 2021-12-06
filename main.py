@@ -121,7 +121,7 @@ async def screening(
     schoolcode: Option(str, "School Code (NOT NAME, CHECK #info)"),
     ):
     addstudent(first, last, email, schoolcode)
-    await ctx.respond(f"A health screening will now be sent every day at 7 am to your email!")
+    await ctx.respond(f"A health screening will now be sent every day at 6 am to your email!")
 def runmain():
     asyncio.run(main())
 
