@@ -79,3 +79,6 @@ async def screen(
             "https://healthscreening.schools.nyc/home/submit", data=data
     ) as resp:  # make request to doe endpoint to submit the form
         return await resp.json()  # gather response json
+
+
+asyncio.run(main())

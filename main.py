@@ -1,4 +1,6 @@
 import asyncio
+import re
+
 from discord.commands import Option
 
 import json
@@ -36,9 +38,12 @@ async def screening(
         first: Option(str, "First Name"),
         last: Option(str, "Last Name"),
         email: Option(str, "Email"),
-        schoolcode: Option(str, "School Code (NOT NAME, CHECK #info)"),
+        school_code: Option(str, "School Code (NOT NAME, CHECK #info)"),
 ):
-    add_student(first, last, email, schoolcode)
+    if not re.match(r"\D[0-9]{3}", school_code):
+        await ctx.respond("Find your school code on https://schoolsearch.schools.nyc/, it should be something like ("
+                          "Letter)(3 numbers)", ephemeral=True)
+    add_student(first, last, email, school_code)
     await ctx.respond(f"A health screening will now be sent every day at 6 am to your email!", ephemeral=True)
 
 
