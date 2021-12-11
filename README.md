@@ -28,7 +28,7 @@ Have cron run cronscript.py every day at 6 am
 
 Run bot:
 ```sh
-TOKEN="<your token>" python main.py
+TOKEN="<token>" python main.py
 ```
 
 By using you agree to the [license](https://github.com/cleonyc/autocovidbot/blob/main/LICENSE)
