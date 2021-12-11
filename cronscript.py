@@ -1,37 +1,43 @@
-from apscheduler.triggers.cron import CronTrigger
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from datetime import datetime
 import aiohttp
 import json
 import asyncio
+import sqlite3
 
-with open("users.json") as d:
-    users = json.load(d)
+
+con = sqlite3.connect('users.db')
+cur = con.cursor()
 
 
 async def main():
     """
     Main function, awaits the time to fill out form, and then fills out form.
     """
+    cur.execute("SELECT * FROM users")
+    users = cur.fetchall()
+    # print(users)
+    con.commit()
+    con.close()
 
     print("Sending covid screenings!")
     print("Users:")
-    print(json.dumps(users, indent=3))
+    print(users)
+    
     for s in users:
         await req(s)
         await asyncio.sleep(1)
 
 
 async def req(student):
-    async with aiohttp.ClientSession() as session:  # create aiohttp session object for sending requests
-        # while True:  # continue forever
-        screening = (  # fill out screening
+    async with aiohttp.ClientSession() as session:  
+
+        screening = (
             await screen(
-                student["firstName"],
-                student["lastName"],
-                student["email"],
-                student["stateCode"],
-                student["schoolCode"],
+                student[1],
+                student[2],
+                student[3],
+                "NY",
+                student[4],
                 session,
             )
         )["success"]
@@ -43,7 +49,6 @@ async def req(student):
 
 
 async def screen(
-        # see lines 32-45 to see purposes of args
         first_name,
         last_name,
         email,
@@ -80,5 +85,5 @@ async def screen(
     ) as resp:  # make request to doe endpoint to submit the form
         return await resp.json()  # gather response json
 
-
 asyncio.run(main())
+con.close()

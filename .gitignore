@@ -148,3 +148,4 @@ data.json
 .vscode
 .env
 users.json
+users.db

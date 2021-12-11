@@ -9,12 +9,26 @@ Use by joining [this discord](https://discord.gg/6G4kNjqpfb)
 Credits to https://github.com/hair for https://github.com/hair/autoCovid, the base for this bot
 
 ## Self hosting
-Because this is in development, the backend of this is going to break, so use with caution and feel free to contact me for help with anything.
+Not recommended, I have no intention of making this any easier in the near future, but it's doable. Also, everything will likely break in the future when I inevitable decide that the current code is spaghetti.
+
+Replace `916896832737648710` in `guild_ids` with your guild's id
+
+Dependencies:
 ```sh
-git clone https://github.com/cleonyc/autocovidbot.git 
-cd autocovidbot
 pip install git+https://github.com/Pycord-Development/pycord
-pip install -r requirements.txt
+pip install asyncio
+pip install aiohttp
+```
+
+
+Have cron run cronscript.py every day at 6 am
+```cron
+0 5 * * * python3 /path/to/cronscript.py
+```
+
+Run bot:
+```sh
+TOKEN="<your token>" python main.py
 ```
 
 By using you agree to the [license](https://github.com/cleonyc/autocovidbot/blob/main/LICENSE)
